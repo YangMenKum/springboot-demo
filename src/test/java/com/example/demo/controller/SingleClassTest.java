@@ -1,6 +1,6 @@
-package com.example.demo;
+package com.example.demo.controller;
 
-import com.example.demo.controller.ExampleController;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,43 +11,52 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * 单个类拦截器
+ *
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class DemoApplicationTests {
-    /**
-     * 用于模拟调用controller的接口
-     * 发起请求，在@Test定义的hello
-     * 测试用例中，perform函数执行
-     * 一次请求调用，accept用于执行
-     * 接收的数据类型，andExcept用
-     * 于判断接口返回的期望值。
-     */
+public class SingleClassTest {
+
     private MockMvc mvc;
 
-    /**
-     * JUnit中定义在测试用例@Test内容执行前预加载的内容
-     * 这里用来初始化对ExampleController
-     *
-     * @throws Exception
-     */
     @Before
     public void setUp() throws Exception {
+        // 单个类  拦截器无效（controller内部依赖的Bean不会注入）
         mvc = MockMvcBuilders.standaloneSetup(new ExampleController()).build();
     }
 
+    @After
+    public void tearDown() throws Exception {
+    }
+
+    /**
+     * 无Bean调用-成功
+     * @throws Exception
+     */
     @Test
-    public void hello() throws Exception {
+    public void index() throws Exception {
         mvc.perform(MockMvcRequestBuilders.get("/index")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string(equalTo("hello world!")))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
-
     }
+
+    /**
+     * 有Bean调用-失败
+     * @throws Exception
+     */
+    @Test
+    public void serviceBean() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.get("/serviceBean")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
+
 }

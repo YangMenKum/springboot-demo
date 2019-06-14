@@ -1,4 +1,4 @@
-package com.example.demo.Controller;
+package com.example.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
@@ -10,23 +10,23 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.logging.Logger;
 
-
 /**
  * @author by Young
- * @date 2019/4/10 0010
+ * @date 2019/5/7 0007
  * @Description
  */
 @RestController
-public class ExampleController {
+public class EurekaDemoController {
     private final Logger logger = Logger.getLogger(String.valueOf(getClass()));
     @Autowired
     private DiscoveryClient client;
-    @RequestMapping(value="/index",method = RequestMethod.GET)
-    String index() {
+
+    @RequestMapping(value = "/eureka", method = RequestMethod.GET)
+    String eureka() {
         List<ServiceInstance> instanceList = client.getInstances("demo-service");
         instanceList.stream().forEach(instance -> {
             logger.info("host:" + instance.getHost() + "，serviceId:" + instance.getServiceId());
         });
-        return "hello world!";
+        return "demo-service";
     }
 }
